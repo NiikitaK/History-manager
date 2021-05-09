@@ -15,10 +15,6 @@ public class DeployHistoryResource {
     @Autowired
     private DeployHistoryRepository deployHistoryRepository;
 
-    @GetMapping("/test")
-    public String test() {
-        return "test";
-    }
 
     @GetMapping("/deployHistory/{id}")
     @ResponseBody
