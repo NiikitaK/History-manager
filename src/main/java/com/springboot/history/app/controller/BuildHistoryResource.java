@@ -4,6 +4,7 @@ import com.springboot.history.app.model.dto.BuildHistoryDTO;
 import com.springboot.history.app.model.entity.BuildHistory;
 import com.springboot.history.app.repository.BuildHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -31,17 +32,25 @@ public class BuildHistoryResource {
     public List<BuildHistory> getAll() {
         return buildHistoryRepository.findAll();
     }
+    @GetMapping("/buildHistory/sort/{field}")
+    public List<BuildHistory> sortField(@PathVariable("field") String  field) {
+        return buildHistoryRepository.findAll(Sort.by(field));
+    }
+    @PostMapping("/buildHistory/sortByField")
+    public List<BuildHistory> sortByField(@RequestBody String field) {
+        return buildHistoryRepository.findAll(Sort.by(field));
+    }
 
     @PostMapping("/buildHistory")
     public void createHistory(@RequestBody BuildHistoryDTO buildHistoryDTO) {
-        BuildHistory buildHistory = BuildHistoryDTO.builder()
+        BuildHistory buildHistory = BuildHistory.builder()
                 .date(new Date(System.currentTimeMillis()))
                 .user(buildHistoryDTO.getUser())
                 .result(buildHistoryDTO.getResult())
-                .deployName(buildHistoryDTO.getBuildName())
-                .platformType(buildHistoryDTO.getArtifactType())
+                .buildName(buildHistoryDTO.getBuildName())
+                .artifactType(buildHistoryDTO.getArtifactType())
                 .build();
-        buildHistoryRepository.save(buildHistoryDTO);
+        buildHistoryRepository.save(buildHistory);
     }
 
     @DeleteMapping("/buildHistory/{id}")
