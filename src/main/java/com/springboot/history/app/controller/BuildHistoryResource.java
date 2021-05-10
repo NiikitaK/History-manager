@@ -32,12 +32,14 @@ public class BuildHistoryResource {
     public List<BuildHistory> getAll() {
         return buildHistoryRepository.findAll();
     }
+
     @GetMapping("/buildHistory/sort/{field}")
-    public List<BuildHistory> sortField(@PathVariable("field") String  field) {
+    public List<BuildHistory> sortField(@PathVariable("field") String field) {
         return buildHistoryRepository.findAll(Sort.by(field));
     }
-    @PostMapping("/buildHistory/sortByField")
-    public List<BuildHistory> sortByField(@RequestBody String field) {
+
+    @GetMapping("/buildHistory/sortByField")
+    public List<BuildHistory> sortByField(@RequestParam String field) {
         return buildHistoryRepository.findAll(Sort.by(field));
     }
 

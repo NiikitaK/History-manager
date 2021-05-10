@@ -4,6 +4,7 @@ import com.springboot.history.app.model.entity.DeployHistory;
 import com.springboot.history.app.model.dto.DeployHistoryDTO;
 import com.springboot.history.app.repository.DeployHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -26,6 +27,11 @@ public class DeployHistoryResource {
     @ResponseBody
     public List<DeployHistory> getAll() {
         return deployHistoryRepository.findAll();
+    }
+
+    @PostMapping("/deployHistory/sortByField")
+    public List<DeployHistory> sortByField(@RequestParam String field) {
+        return deployHistoryRepository.findAll(Sort.by(field));
     }
 
     @PostMapping("/deployHistory")
