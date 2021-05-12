@@ -31,7 +31,12 @@ public class DeployHistoryResource {
 
     @PostMapping("/deployHistory/sortByField")
     public List<DeployHistory> sortByField(@RequestParam String field) {
-        return deployHistoryRepository.findAll(Sort.by(field));
+        if (field.equals("result") || (field.equals("deployName")) || (field.equals("platformType") || (field.equals("platformVersion")))) {
+            return deployHistoryRepository.findAll(Sort.by(field));
+        } else {
+            System.out.println("Field not found");
+            return deployHistoryRepository.findAll();
+        }
     }
 
     @PostMapping("/deployHistory")

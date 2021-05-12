@@ -40,7 +40,12 @@ public class BuildHistoryResource {
 
     @GetMapping("/buildHistory/sortByField")
     public List<BuildHistory> sortByField(@RequestParam String field) {
-        return buildHistoryRepository.findAll(Sort.by(field));
+        if ((field.equals("user")) || (field.equals("result")) || (field.equals("buildName")) || (field.equals("artifactType"))) {
+            return buildHistoryRepository.findAll(Sort.by(field));
+        } else {
+            System.out.println("Field not found");
+            return buildHistoryRepository.findAll();
+        }
     }
 
     @PostMapping("/buildHistory")
