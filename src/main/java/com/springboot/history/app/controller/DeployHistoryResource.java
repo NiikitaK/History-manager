@@ -5,10 +5,14 @@ import com.springboot.history.app.model.dto.DeployHistoryDTO;
 import com.springboot.history.app.repository.DeployHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
+
+import static com.springboot.history.app.Constants.*;
 
 @RestController
 public class DeployHistoryResource {
@@ -20,7 +24,7 @@ public class DeployHistoryResource {
     @GetMapping("/deployHistory/{id}")
     @ResponseBody
     public DeployHistory findById(@PathVariable("id") String id) {
-        return deployHistoryRepository.findById(id).get();
+        return deployHistoryRepository.findById(id).orElseThrow(()-> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id Not Found"));
     }
 
     @GetMapping("/deployHistory")
@@ -31,12 +35,10 @@ public class DeployHistoryResource {
 
     @PostMapping("/deployHistory/sortByField")
     public List<DeployHistory> sortByField(@RequestParam String field) {
-        if (field.equals("result") || (field.equals("deployName")) || (field.equals("platformType") || (field.equals("platformVersion")))) {
+        if (field.equals(RESULT) || (field.equals(DEPLOYNAME)) || (field.equals(PLATFORMTYPE) || (field.equals(PLATFORMVERSION)))) {
             return deployHistoryRepository.findAll(Sort.by(field));
-        } else {
-            System.out.println("Field not found");
-            return deployHistoryRepository.findAll();
         }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,  "Field  Not Found");
     }
 
     @PostMapping("/deployHistory")
@@ -54,6 +56,9 @@ public class DeployHistoryResource {
 
     @DeleteMapping("/deployHistory/{id}")
     public void deleteHistory(@PathVariable("id") String id) {
+        if (deployHistoryRepository.findById(id).isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id Not Found");
+        else
         deployHistoryRepository.deleteById(id);
     }
 

@@ -4,11 +4,18 @@ import com.springboot.history.app.model.dto.BuildHistoryDTO;
 import com.springboot.history.app.model.entity.BuildHistory;
 import com.springboot.history.app.repository.BuildHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
+
+
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
+
+import static com.springboot.history.app.Constants.*;
 
 @RestController
 public class BuildHistoryResource {
@@ -16,15 +23,10 @@ public class BuildHistoryResource {
     @Autowired
     private BuildHistoryRepository buildHistoryRepository;
 
-    @GetMapping("/test")
-    public String test() {
-        return "test";
-    }
-
     @GetMapping("/buildHistory/{id}")
     @ResponseBody
     public BuildHistory findById(@PathVariable("id") String id) {
-        return buildHistoryRepository.findById(id).get();
+        return buildHistoryRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id Not Found"));
     }
 
     @GetMapping("/buildHistory")
@@ -33,19 +35,13 @@ public class BuildHistoryResource {
         return buildHistoryRepository.findAll();
     }
 
-    @GetMapping("/buildHistory/sort/{field}")
-    public List<BuildHistory> sortField(@PathVariable("field") String field) {
-        return buildHistoryRepository.findAll(Sort.by(field));
-    }
-
     @GetMapping("/buildHistory/sortByField")
     public List<BuildHistory> sortByField(@RequestParam String field) {
-        if ((field.equals("user")) || (field.equals("result")) || (field.equals("buildName")) || (field.equals("artifactType"))) {
+        if ((field.equals(USER)) || (field.equals(RESULT)) || (field.equals(BUILDNAME)) || (field.equals(ARTIFACTTYPE))) {
             return buildHistoryRepository.findAll(Sort.by(field));
-        } else {
-            System.out.println("Field not found");
-            return buildHistoryRepository.findAll();
         }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Field Not Found");
+
     }
 
     @PostMapping("/buildHistory")
@@ -62,8 +58,10 @@ public class BuildHistoryResource {
 
     @DeleteMapping("/buildHistory/{id}")
     public void deleteHistory(@PathVariable("id") String id) {
-        buildHistoryRepository.deleteById(id);
+        if (buildHistoryRepository.findById(id).isEmpty())
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Id Not Found");
+        else
+            buildHistoryRepository.deleteById(id);
     }
-
 }
 
