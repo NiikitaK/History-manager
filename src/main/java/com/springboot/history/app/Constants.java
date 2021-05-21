@@ -8,4 +8,5 @@ public class Constants {
     public static final String DEPLOYNAME = "deployName";
     public static final String PLATFORMTYPE = "platformType";
     public static final String PLATFORMVERSION = "platfrormVersion";
+	//const
 }
